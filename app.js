@@ -9,57 +9,53 @@ const products = [
 
 const cart = {};
 
-function formatSum(n){
-  return new Intl.NumberFormat('ru-RU').format(n) + " so'm";
-}
-
-function calcTotal(){
-  return products.reduce((s,p)=> s + (cart[p.id]||0)*p.price, 0);
-}
+function formatSum(n){ return new Intl.NumberFormat('ru-RU').format(n) + " so'm"; }
+function calcTotal(){ return products.reduce((s,p)=> s + (cart[p.id]||0)*p.price, 0); }
 
 function validate(){
   const total = calcTotal();
   const phone = document.getElementById("phone").value.trim();
   const address = document.getElementById("address").value.trim();
-
   if (total <= 0) return { ok:false, msg:"Savat bo‘sh" };
   if (!phone) return { ok:false, msg:"Telefon kiriting" };
   if (!address) return { ok:false, msg:"Manzil kiriting" };
   return { ok:true, msg:"" };
 }
 
+// ✅ ВЕШАЕМ ОДИН РАЗ
+function handleSend(){
+  const v = validate();
+  if(!v.ok){
+    tg.showPopup({ title: "To‘ldiring", message: v.msg, buttons: [{type:"ok"}] });
+    return;
+  }
+
+  const items = products
+    .filter(p => (cart[p.id]||0) > 0)
+    .map(p => ({ id:p.id, title:p.title, qty:cart[p.id], price:p.price }));
+
+  const payload = {
+    items,
+    total: calcTotal(),
+    phone: document.getElementById("phone").value.trim(),
+    address: document.getElementById("address").value.trim(),
+    comment: document.getElementById("comment").value.trim(),
+  };
+
+  tg.sendData(JSON.stringify(payload));
+  tg.close();
+}
+
+tg.MainButton.onClick(handleSend); // ✅ один раз
+
 function updateMainButton(){
   const total = calcTotal();
-
-  if (total > 0) {
+  if(total > 0){
     tg.MainButton.setText(`✅ Yuborish (${formatSum(total)})`);
     tg.MainButton.show();
   } else {
     tg.MainButton.hide();
   }
-
-  tg.MainButton.onClick(() => {
-    const v = validate();
-    if(!v.ok){
-      tg.showPopup({ title: "To‘ldiring", message: v.msg, buttons: [{type:"ok"}] });
-      return;
-    }
-
-    const items = products
-      .filter(p => (cart[p.id]||0) > 0)
-      .map(p => ({ id:p.id, title:p.title, qty:cart[p.id], price:p.price }));
-
-    const payload = {
-      items,
-      total: calcTotal(),
-      phone: document.getElementById("phone").value.trim(),
-      address: document.getElementById("address").value.trim(),
-      comment: document.getElementById("comment").value.trim(),
-    };
-
-    tg.sendData(JSON.stringify(payload)); // <-- отправка заказа в бота
-    tg.close();
-  });
 }
 
 function render(){
@@ -72,10 +68,7 @@ function render(){
     el.className = "card";
     el.innerHTML = `
       <div class="row">
-        <div>
-          <b>${p.title}</b><br/>
-          <span class="muted">${formatSum(p.price)}</span>
-        </div>
+        <div><b>${p.title}</b><br/><span class="muted">${formatSum(p.price)}</span></div>
         <div class="row">
           <button data-act="minus" data-id="${p.id}">-</button>
           <div class="qty">${qty}</div>
