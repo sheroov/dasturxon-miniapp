@@ -1,13 +1,50 @@
 <!doctype html>
-<html>
+<html lang="uz">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Menyu</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body { font-family: system-ui, Arial; padding: 16px; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+    .row { display:flex; justify-content:space-between; align-items:center; gap:10px; }
+    button { padding: 8px 12px; border-radius: 10px; border: 1px solid #ccc; cursor:pointer; }
+    input, textarea { width:100%; border:1px solid #ddd; border-radius:10px; padding:10px; font-size:16px; box-sizing:border-box; }
+    textarea { height: 70px; }
+    .muted { color:#666; font-size: 13px; }
+    .qty { min-width: 30px; text-align:center; }
+  </style>
 </head>
 <body>
-  <h2>Mini App ishlayapti 🚀</h2>
+  <h2>🍱 Menyu</h2>
+  <div id="list"></div>
 
-  <script src="app.js"></script>
+  <div class="card">
+    <div class="row">
+      <b>Jami:</b>
+      <b id="total">0 so'm</b>
+    </div>
+    <div class="muted">Buyurtma uchun telefon va manzilni kiriting 👇</div>
+  </div>
+
+  <div class="card">
+    <b>📞 Telefon</b>
+    <div class="muted">Masalan: +998901234567</div>
+    <input id="phone" placeholder="+998..." />
+  </div>
+
+  <div class="card">
+    <b>📍 Manzil</b>
+    <div class="muted">Masalan: Chilonzor 5-kvartal, 12-uy</div>
+    <input id="address" placeholder="Manzil..." />
+  </div>
+
+  <div class="card">
+    <b>📝 Izoh (ixtiyoriy)</b>
+    <textarea id="comment" placeholder="Masalan: achchiq bo‘lmasin..."></textarea>
+  </div>
+
+  <script src="./app.js"></script>
 </body>
 </html>
